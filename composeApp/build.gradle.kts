@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -21,6 +22,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.uiTooling)
 
             implementation(libs.navigation.compose)
 
@@ -33,12 +35,14 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
 
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
 
             implementation(libs.exposed.core)
             implementation(libs.exposed.dao)
             implementation(libs.exposed.jdbc)
             implementation(libs.exposed.java.time)
             implementation(libs.postgresql)
+            implementation("com.typesafe:config:1.4.2")
 
 
             implementation(project(":orbit_mvi"))
