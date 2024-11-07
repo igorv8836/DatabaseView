@@ -1,4 +1,4 @@
-package org.example.databaseview.data.di
+package org.example.databaseview.di
 
 import org.example.databaseview.data.dao.*
 import org.koin.dsl.module

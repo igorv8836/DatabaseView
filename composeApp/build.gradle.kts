@@ -44,6 +44,8 @@ kotlin {
             implementation(libs.postgresql)
             implementation("com.typesafe:config:1.4.2")
 
+            implementation(libs.orbit.core)
+
 
             implementation(project(":orbit_mvi"))
         }

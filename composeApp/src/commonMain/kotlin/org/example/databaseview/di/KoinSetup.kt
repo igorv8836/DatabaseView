@@ -10,7 +10,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
         Napier.base(DebugAntilog())
         appDeclaration()
         modules(
-            testModule()
+            dataModule(),
+            presentationModule()
         )
 
     }

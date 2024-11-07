@@ -1,7 +1,6 @@
 package org.example.databaseview.data.dao
 
 import org.example.databaseview.data.dao.interfaces.CrudDao
-import org.example.databaseview.data.database.dbQuery
 import org.example.databaseview.data.mapper.toProjectModel
 import org.example.databaseview.data.table.ProjectTable
 import org.example.databaseview.domain.model.Project
@@ -9,34 +8,28 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class ProjectDao : CrudDao<Project> {
-
-    override suspend fun create(entity: Project): Boolean = dbQuery {
+    override fun create(entity: Project): Boolean =
         ProjectTable.insert {
             it[name] = entity.name
             it[requirements] = entity.requirements
             it[contractId] = entity.contractId
         }.insertedCount > 0
-    }
 
-    override suspend fun read(id: Int): Project? = dbQuery {
-        ProjectTable.select { ProjectTable.projectId eq id }
+    override fun read(id: Int): Project? =
+        ProjectTable.select { ProjectTable.id eq id }
             .map(ResultRow::toProjectModel)
             .singleOrNull()
-    }
 
-    override suspend fun readAll(): List<Project> = dbQuery {
+    override fun readAll(): List<Project> =
         ProjectTable.selectAll().map(ResultRow::toProjectModel)
-    }
 
-    override suspend fun update(entity: Project): Boolean = dbQuery {
-        ProjectTable.update({ ProjectTable.projectId eq entity.projectId }) {
+    override fun update(entity: Project): Boolean =
+        ProjectTable.update({ ProjectTable.id eq entity.id }) {
             it[name] = entity.name
             it[requirements] = entity.requirements
             it[contractId] = entity.contractId
         } > 0
-    }
 
-    override suspend fun delete(id: Int): Boolean = dbQuery {
-        ProjectTable.deleteWhere { projectId eq id } > 0
-    }
+    override fun delete(id: Int): Boolean =
+        ProjectTable.deleteWhere { this.id eq id } > 0
 }

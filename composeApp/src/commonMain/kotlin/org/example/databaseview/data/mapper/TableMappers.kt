@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.ResultRow
 
 fun ResultRow.toClientModel(): Client {
     return Client(
-        clientId = this[ClientTable.clientId],
+        id = this[ClientTable.id],
         fullName = this[ClientTable.fullName],
         phone = this[ClientTable.phone]
     )
@@ -15,7 +15,7 @@ fun ResultRow.toClientModel(): Client {
 
 fun ResultRow.toPositionModel(): Position {
     return Position(
-        positionId = this[PositionTable.positionId],
+        id = this[PositionTable.id],
         title = this[PositionTable.title],
         salary = this[PositionTable.salary].toDouble()
     )
@@ -23,7 +23,7 @@ fun ResultRow.toPositionModel(): Position {
 
 fun ResultRow.toWorkerModel(): Worker {
     return Worker(
-        workerId = this[WorkerTable.workerId],
+        id = this[WorkerTable.id],
         departmentId = this[WorkerTable.departmentId],
         fullName = this[WorkerTable.fullName],
         phone = this[WorkerTable.phone],
@@ -33,7 +33,7 @@ fun ResultRow.toWorkerModel(): Worker {
 
 fun ResultRow.toDepartmentModel(): Department {
     return Department(
-        departmentId = this[DepartmentTable.departmentId],
+        id = this[DepartmentTable.id],
         name = this[DepartmentTable.name],
         phone = this[DepartmentTable.phone]
     )
@@ -41,7 +41,7 @@ fun ResultRow.toDepartmentModel(): Department {
 
 fun ResultRow.toLicense1CModel(): License1C {
     return License1C(
-        licenseId = this[License1CTable.licenseId],
+        id = this[License1CTable.id],
         workerId = this[License1CTable.workerId],
         version = this[License1CTable.version],
         expirationDate = this[License1CTable.expirationDate]
@@ -50,7 +50,7 @@ fun ResultRow.toLicense1CModel(): License1C {
 
 fun ResultRow.toContractModel(): Contract {
     return Contract(
-        contractId = this[ContractTable.contractId],
+        id = this[ContractTable.id],
         clientId = this[ContractTable.clientId],
         amount = this[ContractTable.amount].toDouble(),
         deadline = this[ContractTable.deadline]
@@ -59,7 +59,7 @@ fun ResultRow.toContractModel(): Contract {
 
 fun ResultRow.toProjectModel(): Project {
     return Project(
-        projectId = this[ProjectTable.projectId],
+        id = this[ProjectTable.id],
         name = this[ProjectTable.name],
         requirements = this[ProjectTable.requirements],
         contractId = this[ProjectTable.contractId]
@@ -68,14 +68,14 @@ fun ResultRow.toProjectModel(): Project {
 
 fun ResultRow.toStatusModel(): Status {
     return Status(
-        statusId = this[StatusTable.statusId],
+        id = this[StatusTable.id],
         statusName = this[StatusTable.statusName]
     )
 }
 
 fun ResultRow.toTaskModel(): Task {
     return Task(
-        taskId = this[TaskTable.taskId],
+        id = this[TaskTable.id],
         projectId = this[TaskTable.projectId],
         name = this[TaskTable.name],
         description = this[TaskTable.description],

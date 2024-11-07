@@ -1,7 +1,6 @@
 package org.example.databaseview.data.dao
 
 import org.example.databaseview.data.dao.interfaces.CrudDao
-import org.example.databaseview.data.database.dbQuery
 import org.example.databaseview.data.mapper.toPositionModel
 import org.example.databaseview.data.table.PositionTable
 import org.example.databaseview.domain.model.Position
@@ -10,31 +9,26 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class PositionDao : CrudDao<Position> {
 
-    override suspend fun create(entity: Position): Boolean = dbQuery {
+    override fun create(entity: Position): Boolean =
         PositionTable.insert {
             it[title] = entity.title
             it[salary] = entity.salary.toBigDecimal()
         }.insertedCount > 0
-    }
 
-    override suspend fun read(id: Int): Position? = dbQuery {
-        PositionTable.select { PositionTable.positionId eq id }
+    override fun read(id: Int): Position? =
+        PositionTable.select { PositionTable.id eq id }
             .map(ResultRow::toPositionModel)
             .singleOrNull()
-    }
 
-    override suspend fun readAll(): List<Position> = dbQuery {
+    override fun readAll(): List<Position> =
         PositionTable.selectAll().map(ResultRow::toPositionModel)
-    }
 
-    override suspend fun update(entity: Position): Boolean = dbQuery {
-        PositionTable.update({ PositionTable.positionId eq entity.positionId }) {
+    override fun update(entity: Position): Boolean =
+        PositionTable.update({ PositionTable.id eq entity.id }) {
             it[title] = entity.title
             it[salary] = entity.salary.toBigDecimal()
         } > 0
-    }
 
-    override suspend fun delete(id: Int): Boolean = dbQuery {
-        PositionTable.deleteWhere { positionId eq id } > 0
-    }
+    override fun delete(id: Int): Boolean =
+        PositionTable.deleteWhere { this.id eq id } > 0
 }
