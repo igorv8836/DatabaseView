@@ -18,147 +18,153 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ProjectDetailsScreen(
     navController: NavController,
+    projectId: Int?,
     vm: ProjectsViewModel = koinViewModel()
 ) {
     val state by vm.fullProject.collectAsStateWithLifecycle()
-    val contracts by vm.contracts.collectAsStateWithLifecycle()
+    val contracts by vm.contractClientModels.collectAsStateWithLifecycle()
+
+    LaunchedEffect(projectId){
+        projectId?.let {
+            vm.onEvent(ProjectsEvent.LoadProject(it))
+        }
+    }
 
     ProjectDetailsScreen(
         state = state,
-        contracts = contracts,
+        contracts = ContractsList(contracts),
         onEvent = vm::onEvent,
-        popBackStack = { navController.popBackStack() }
-    )
+        popBackStack = { navController.popBackStack() })
 }
+
+@Stable
+data class ContractsList(
+    val data: List<ContractClientModel>
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectDetailsScreen(
     state: ProjectFullModel,
-    contracts: List<Contract>,
+    contracts: ContractsList,
     onEvent: (ProjectsEvent) -> Unit,
     popBackStack: () -> Unit = {}
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Детали проекта") },
-                navigationIcon = {
-                    IconButton(onClick = popBackStack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
-                    }
-                }
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Детали проекта") }, navigationIcon = {
+            IconButton(onClick = popBackStack) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+            }
+        })
+    }) { paddingValues ->
+        Column(
+            modifier = Modifier.padding(paddingValues)
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+        ) {
+            ScaffoldContent(
+                state = state, contracts = contracts, onEvent = onEvent
             )
         }
-    ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
-            OutlinedTextField(
-                value = state.project.name,
-                onValueChange = { onEvent(ProjectsEvent.EnterProjectName(it)) },
-                label = { Text("Название проекта") }
-            )
+    }
+}
 
-            OutlinedTextField(
-                value = state.project.requirements ?: "",
-                onValueChange = { onEvent(ProjectsEvent.EnterProjectRequirements(it)) },
-                label = { Text("Описание проекта") },
-                modifier = Modifier.padding(top = 8.dp)
-            )
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ScaffoldContent(
+    state: ProjectFullModel, contracts: ContractsList, onEvent: (ProjectsEvent) -> Unit
+) {
+    OutlinedTextField(
+        value = state.project.name,
+        onValueChange = { onEvent(ProjectsEvent.EnterProjectName(it)) },
+        label = { Text("Название проекта") },
+        modifier = Modifier.fillMaxWidth()
+    )
 
-            var expanded by remember { mutableStateOf(false) }
-            var selectedContract by remember { mutableStateOf(state.contract) }
+    OutlinedTextField(
+        value = state.project.requirements ?: "",
+        onValueChange = { onEvent(ProjectsEvent.EnterProjectRequirements(it)) },
+        label = { Text("Описание проекта") },
+        modifier = Modifier.padding(top = 8.dp).fillMaxWidth()
+    )
 
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+    var expanded by remember { mutableStateOf(false) }
+    var selectedContract by remember { mutableStateOf(state.contract) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier.padding(top = 8.dp)
+    ) {
+        OutlinedTextField(value = selectedContract.contract.id.toString(),
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Контракт") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                .clickable { expanded = true })
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            LazyColumn(
+                modifier = Modifier.width(400.dp).height(200.dp)
             ) {
-                OutlinedTextField(
-                    value = selectedContract.id.toString(),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Контракт") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                items(contracts.data) { contract ->
+                    DropdownMenuItem(text = {
+                        Text("ID: ${contract.contract.id} - " +
+                                "${contract.client.fullName} - " +
+                                "Срок: ${contract.contract.deadline}")
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .clickable { expanded = true }
+                        onClick = {
+                            selectedContract = contract
+                            onEvent(ProjectsEvent.SelectContract(contract.contract))
+                            expanded = false
+                            TODO()
+                        })
+                }
+            }
+
+            HorizontalDivider()
+            DropdownMenuItem(onClick = {
+                onEvent(ProjectsEvent.CreateNewContract)
+                TODO()
+            }, text = {
+                Text(
+                    "Редактировать контракты", color = MaterialTheme.colorScheme.primary
                 )
+            })
+        }
+    }
 
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    LazyColumn(
-                        modifier = Modifier.width(400.dp).height(200.dp)
-                    ) {
-                        items(contracts) { contract ->
-                            DropdownMenuItem(
-                                text = { Text("ID: ${contract.id} - Срок: ${contract.deadline}") },
-                                onClick = {
-                                    selectedContract = contract
-                                    onEvent(ProjectsEvent.SelectContract(contract))
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
+    Text(
+        "Задачи",
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+    )
 
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        onClick = { onEvent(ProjectsEvent.CreateNewContract) },
-                        text = {
-                            Text(
-                                "Создать новый контракт",
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    )
-                }
-            }
-
-            Row(modifier = Modifier.padding(top = 8.dp)) {
-                Button(
-                    onClick = { onEvent(ProjectsEvent.EditContract(selectedContract)) }
-                ) {
-                    Text("Редактировать контракт")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = { onEvent(ProjectsEvent.DeleteContract(selectedContract.id)) },
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Удалить контракт")
-                }
-            }
-
-            Text(
-                "Задачи",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(state.tasks) { task ->
-                    TaskItem(task = task.first, status = task.second, onClick = {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(state.tasks) { task ->
+            TaskItem(element = task, onClick = {
 //                        navController.navigate("taskDetails/${task.first.id}")
-                    })
-                }
-            }
+            })
         }
     }
 }
 
 @Composable
-fun TaskItem(task: Task, status: Status, onClick: () -> Unit) {
+fun TaskItem(element: ProjectTaskModel, onClick: () -> Unit) {
     OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        onClick = onClick, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
     ) {
         Column {
-            Text("Задача: ${task.name}", style = MaterialTheme.typography.titleSmall)
-            Text("Статус: ${status.statusName}", style = MaterialTheme.typography.bodyMedium)
-            Text("Дедлайн: ${task.deadlineDate}", style = MaterialTheme.typography.bodyMedium)
+            Text("Задача: ${element.task.name}", style = MaterialTheme.typography.titleSmall)
+            Text(
+                "Статус: ${element.status.statusName}", style = MaterialTheme.typography.bodyMedium
+            )
+            Text("Дедлайн: ${element.task.name}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

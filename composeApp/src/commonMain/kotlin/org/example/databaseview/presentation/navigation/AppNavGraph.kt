@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
+import androidx.navigation.*
 import androidx.navigation.compose.*
 import org.example.databaseview.presentation.projects_screen.*
 
@@ -28,7 +28,7 @@ fun AppNavGraph(
         }
 
         composable<ProjectDetailsRoute> {
-            ProjectDetailsScreen(navController)
+            ProjectDetailsScreen(navController, it.toRoute<ProjectDetailsRoute>().id)
         }
 
         composable<TaskDetailsRoute> {

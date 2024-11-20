@@ -9,6 +9,7 @@ fun dataModule() = module {
     includes(databaseModule(), daoModule())
     single { MainDatabase() }
 
-    single<ProjectRepository> { ProjectRepositoryImpl(get(), get(), get(), get()) }
+    single<ProjectRepository> { ProjectRepositoryImpl(get(), get(), get(), get(), get(), get()) }
     single<ContractRepository> { ContractRepositoryImpl(get(), get()) }
+    single<ClientRepository> { ClientRepositoryImpl(get()) }
 }

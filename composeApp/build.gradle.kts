@@ -14,6 +14,8 @@ composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
     featureFlags.add(ComposeFeatureFlag.StrongSkipping)
     featureFlags.add(ComposeFeatureFlag.IntrinsicRemember)
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
 }
 
 tasks.register<ComposeHotRun>("runHot") {
@@ -35,9 +37,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.uiTooling)
-
-            implementation("io.sellmair:evas:1.1.0")
-            implementation("io.sellmair:evas-compose:1.1.0")
 
             implementation(libs.navigation.compose)
 

@@ -1,5 +1,7 @@
 package org.example.databaseview.domain.model
 
+import androidx.compose.runtime.*
+
 data class Position(
     val id: Int,
     val title: String,
@@ -20,6 +22,7 @@ data class Worker(
     val positionId: Int
 )
 
+@Immutable
 data class License1C(
     val id: Int,
     val workerId: Int,
@@ -33,6 +36,7 @@ data class Client(
     val phone: String
 )
 
+@Immutable
 data class Contract(
     val id: Int,
     val clientId: Int,
@@ -40,6 +44,7 @@ data class Contract(
     val deadline: java.time.LocalDate
 )
 
+@Immutable
 data class Project(
     val id: Int,
     val name: String,
@@ -52,6 +57,7 @@ data class Status(
     val statusName: String
 )
 
+@Immutable
 data class Task(
     val id: Int,
     val projectId: Int,

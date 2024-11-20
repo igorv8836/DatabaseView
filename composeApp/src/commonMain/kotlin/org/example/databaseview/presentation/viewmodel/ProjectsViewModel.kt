@@ -2,6 +2,7 @@ package org.example.databaseview.presentation.viewmodel
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.example.databaseview.domain.model.*
@@ -10,7 +11,8 @@ import org.example.databaseview.utils.*
 
 class ProjectsViewModel(
     private val projectsRepository: ProjectRepository,
-    private val contractsRepository: ContractRepository
+    private val contractsRepository: ContractRepository,
+    private val clientRepository: ClientRepository
 ) : ViewModel() {
     val state = projectsRepository.getProjects().asResult().map {
         when (it) {
@@ -24,9 +26,9 @@ class ProjectsViewModel(
         initialValue = ProjectsScreenState.Loading
     )
 
-    val contracts = contractsRepository.getContracts().map { it.map { it1 -> it1.first } }.stateIn(
+    val contractClientModels = contractsRepository.getContracts().stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
+        started = SharingStarted.WhileSubscribed(500_000),
         initialValue = emptyList()
     )
 
@@ -70,6 +72,20 @@ class ProjectsViewModel(
             ProjectsEvent.CreateNewContract -> TODO()
             is ProjectsEvent.EditContract -> TODO()
             is ProjectsEvent.SelectContract -> TODO()
+            is ProjectsEvent.LoadProject -> {
+                viewModelScope.launch {
+                    val res = projectsRepository.getProject(event.id)
+                    res.fold(
+                        onSuccess = { newVal ->
+                            fullProject.update { newVal }
+                        },
+                        onFailure = {
+                            Napier.i { "Error: $it" }
+                            TODO()
+                        }
+                    )
+                }
+            }
         }
     }
 }
@@ -77,19 +93,15 @@ class ProjectsViewModel(
 
 sealed interface ProjectsEvent {
     data object SaveProject : ProjectsEvent
+    data class LoadProject(val id: Int) : ProjectsEvent
     data object CreateProject : ProjectsEvent
     data object DeleteProject : ProjectsEvent
     data object CreateNewContract : ProjectsEvent
     data class EnterProjectName(val newVal: String) : ProjectsEvent
     data class EnterProjectRequirements(val newVal: String) : ProjectsEvent
     class DeleteContract(id: Int) : ProjectsEvent
-    class EditContract(selectedContract: Contract) :
-        ProjectsEvent
-
-    class SelectContract(contract: Contract) :
-        ProjectsEvent {
-
-    }
+    class EditContract(selectedContract: Contract) : ProjectsEvent
+    class SelectContract(contract: Contract) : ProjectsEvent
 }
 
 

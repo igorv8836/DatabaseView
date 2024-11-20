@@ -6,6 +6,9 @@ import java.time.LocalDate
 @Immutable
 data class ProjectFullModel(
     val project: Project = Project(-1, "", "", -1),
-    val tasks: List<Pair<Task, Status>> = emptyList(),
-    val contract: Contract = Contract(-1, -1, 0.0, LocalDate.MIN)
+    val tasks: List<ProjectTaskModel> = emptyList(),
+    val contract: ContractClientModel = ContractClientModel(
+        Contract(-1, -1, 0.0, LocalDate.MIN),
+        Client(-1, "", "")
+    ),
 )

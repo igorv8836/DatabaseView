@@ -21,8 +21,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProjectsScreen(
-    navController: NavHostController,
-    vm: ProjectsViewModel = koinViewModel()
+    navController: NavHostController, vm: ProjectsViewModel = koinViewModel()
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
 
@@ -39,25 +38,20 @@ fun ProjectsScreen(
     navigateToNewProject: () -> Unit,
     onProjectSelected: (id: Int) -> Unit
 ) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = navigateToNewProject,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Добавить проект"
-                )
-            }
+    Scaffold(floatingActionButton = {
+        FloatingActionButton(
+            onClick = navigateToNewProject, modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add, contentDescription = "Добавить проект"
+            )
         }
-    ) {
+    }) {
         when (state) {
             is ProjectsScreenState.Loading -> LoadingScreen()
             is ProjectsScreenState.Error -> ErrorScreen(message = state.message)
             is ProjectsScreenState.Success -> ProjectsListScreen(
-                projects = state.projects,
-                onProjectSelected = onProjectSelected
+                projects = state.projects, onProjectSelected = onProjectSelected
             )
         }
     }
@@ -66,8 +60,7 @@ fun ProjectsScreen(
 @Composable
 fun LoadingScreen() {
     Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()
     ) {
         CircularProgressIndicator()
     }
@@ -76,8 +69,7 @@ fun LoadingScreen() {
 @Composable
 fun ErrorScreen(message: String) {
     Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
         Text(
             text = "Ошибка: $message",
@@ -89,8 +81,7 @@ fun ErrorScreen(message: String) {
 
 @Composable
 fun ProjectsListScreen(
-    projects: List<ProjectFullModel>,
-    onProjectSelected: (id: Int) -> Unit
+    projects: List<ProjectFullModel>, onProjectSelected: (id: Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -104,16 +95,13 @@ fun ProjectsListScreen(
 
 @Composable
 fun ProjectItem(
-    project: ProjectFullModel,
-    onProjectSelected: (id: Int) -> Unit
+    project: ProjectFullModel, onProjectSelected: (id: Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+    Card(modifier = Modifier.fillMaxWidth().padding(8.dp),
         elevation = CardDefaults.cardElevation(),
-        onClick = { onProjectSelected(project.project.id) }
-    ) {
+        onClick = { onProjectSelected(project.project.id) }) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -123,31 +111,28 @@ fun ProjectItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             val isHuge = (project.project.requirements?.length ?: 0) > 100
-            Text(
-                text = "Требования: ${
-                    if (expanded) project.project.requirements ?: "Нет" else ((project.project.requirements?.take(
-                        100
-                    ) ?: "Нет") + if (isHuge) "..." else "")
-                }",
+            Text(text = "Требования: ${
+                if (expanded) project.project.requirements ?: "Нет" else ((project.project.requirements?.take(
+                    100
+                ) ?: "Нет") + if (isHuge) "..." else "")
+            }",
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.clickable(enabled = isHuge) { expanded = !expanded }
-            )
+                modifier = Modifier.clickable(enabled = isHuge) { expanded = !expanded })
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Срок: ${project.contract.deadline}",
+                text = "Срок: ${project.contract.contract.deadline}",
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Задачи:",
-                style = MaterialTheme.typography.titleMedium
+                text = "Задачи:", style = MaterialTheme.typography.titleMedium
             )
             LazyColumn(
                 modifier = Modifier.heightIn(max = 150.dp)
             ) {
-                items(project.tasks) { task ->
+                items(project.tasks) { element ->
                     Text(
-                        text = "-${task.second.statusName}- ${task.first.name}: ${task.first.description ?: "Описание отсутствует"}",
+                        text = "-${element.status.statusName}- ${element.task.name}: ${element.task.description ?: "Описание отсутствует"}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -162,40 +147,28 @@ fun ProjectsScreenPreview() {
     val sampleProjects = listOf(
         ProjectFullModel(
             project = Project(
-                id = 1,
-                name = "Проект А",
-                requirements = "Требования А",
-                contractId = 1
-            ),
-            tasks = listOf(
-                Pair(
+                id = 1, name = "Проект А", requirements = "Требования А", contractId = 1
+            ), tasks = listOf(
+                ProjectTaskModel(
                     Task(
-                        id = 1,
-                        projectId = 1,
-                        name = "Задача 1",
-                        description = "Описание задачи 1",
-                        deadlineDate = java.time.LocalDate.now(),
-                        statusId = 1,
-                        authorId = 1
-                    ),
-                    Status(
-                        id = 1,
-                        statusName = "Выполнено"
+                        1, 1, "Задача 1", "Описание 1", java.time.LocalDate.now().plusDays(10), 1, 1
+                    ), Status(1, "В работе"), Worker(
+                        1, 1, "Иванов Иван Иванович", "+7 999 999 99 99", 1
                     )
                 )
-            ),
-            contract = Contract(
-                id = 1,
-                clientId = 1,
-                amount = 1000.0,
-                deadline = java.time.LocalDate.now().plusDays(30)
+            ), contract = ContractClientModel(
+                Contract(
+                    id = 1,
+                    clientId = 1,
+                    amount = 1000.0,
+                    deadline = java.time.LocalDate.now().plusDays(30)
+                ), Client(
+                    id = 1, fullName = "Иванов Иван Иванович", phone = "+7 999 999 99 99"
+                )
             )
         )
     )
-    ProjectsScreen(
-        state = ProjectsScreenState.Success(sampleProjects),
-        navigateToNewProject = {}
-        ) {
+    ProjectsScreen(state = ProjectsScreenState.Success(sampleProjects), navigateToNewProject = {}) {
 
     }
 //    ProjectsScreen(state = ProjectsScreenState.Error("Ошибка загрузки")){}

@@ -10,12 +10,12 @@ class ContractRepositoryImpl(
     private val contractDao: ContractDao,
     private val clientDao: ClientDao
 ): ContractRepository {
-    override fun getContracts(): Flow<List<Pair<Contract, Client>>> {
+    override fun getContracts(): Flow<List<ContractClientModel>> {
         return flow {
             val contractsWithClient = dbQuery {
                 contractDao.readAll().map { contract ->
                     val client = clientDao.read(contract.clientId)
-                    client?.let { Pair(contract, client) } ?: throw Exception("Client not found")
+                    client?.let { ContractClientModel(contract, client) } ?: throw Exception("Client not found")
                 }
             }
             emit(contractsWithClient)
