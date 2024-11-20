@@ -5,5 +5,5 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 fun presentationModule() = module {
-    viewModel { ProjectsViewModel(get()) }
+    viewModel { ProjectsViewModel(get(), get()) }
 }

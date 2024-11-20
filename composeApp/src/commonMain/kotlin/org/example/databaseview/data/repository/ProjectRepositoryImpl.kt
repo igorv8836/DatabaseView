@@ -30,11 +30,11 @@ class ProjectRepositoryImpl(
     }
 
     override suspend fun updateProject(project: Project) =
-        Result.runCatching { projectDao.update(project) }
+        Result.runCatching { dbQuery { projectDao.update(project) } }
 
     override suspend fun deleteProject(projectId: Int) =
-        Result.runCatching { projectDao.delete(projectId) }
+        Result.runCatching { dbQuery { projectDao.delete(projectId) } }
 
     override suspend fun createProject(project: Project) =
-        Result.runCatching { projectDao.create(project) }
+        Result.runCatching { dbQuery { projectDao.create(project) } }
 }

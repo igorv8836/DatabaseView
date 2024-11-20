@@ -3,6 +3,8 @@ accompanistSwiperefresh = "0.23.0"
 agp = "8.5.2"
 kotlin = "2.0.21"
 compose-plugin = "1.7.0"
+compose-hot-reload = "1.0.0-dev.28"
+foojay = "0.8.0"
 
 android-compileSdk = "35"
 android-minSdk = "26"
@@ -85,15 +87,14 @@ exposed-java-time = { module = "org.jetbrains.exposed:exposed-java-time", versio
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresVersion" }
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+compose-hot-reload = { id = "org.jetbrains.compose-hot-reload", version.ref = "compose-hot-reload" }
+foojay-resolver-convention = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay" }
 
 conventional-commits = { id = "it.nicolasfarabegoli.conventional-commits", version.ref = "conventional-commits" }
 

@@ -4,7 +4,7 @@ import org.example.databaseview.data.dao.*
 import org.koin.dsl.module
 
 fun daoModule() = module {
-    single { StatusDao() }
+    single { ClientDao() }
     single { ContractDao() }
     single { DepartmentDao() }
     single { License1CDao() }

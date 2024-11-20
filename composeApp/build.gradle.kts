@@ -1,10 +1,23 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.reload.ComposeHotRun
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.hot.reload)
+}
+
+composeCompiler {
+    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
+    featureFlags.add(ComposeFeatureFlag.StrongSkipping)
+    featureFlags.add(ComposeFeatureFlag.IntrinsicRemember)
+}
+
+tasks.register<ComposeHotRun>("runHot") {
+    mainClass.set("org.example.databaseview.MainKt")
 }
 
 kotlin {
@@ -16,13 +29,15 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.uiTooling)
+
+            implementation("io.sellmair:evas:1.1.0")
+            implementation("io.sellmair:evas-compose:1.1.0")
 
             implementation(libs.navigation.compose)
 
