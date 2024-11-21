@@ -1,5 +1,6 @@
 package org.example.databaseview.data.repository
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import org.example.databaseview.data.dao.*
 import org.example.databaseview.data.database.dbQuery
@@ -12,13 +13,18 @@ class ContractRepositoryImpl(
 ): ContractRepository {
     override fun getContracts(): Flow<List<ContractClientModel>> {
         return flow {
-            val contractsWithClient = dbQuery {
-                contractDao.readAll().map { contract ->
-                    val client = clientDao.read(contract.clientId)
-                    client?.let { ContractClientModel(contract, client) } ?: throw Exception("Client not found")
+            while (true) {
+
+                val contractsWithClient = dbQuery {
+                    contractDao.readAll().map { contract ->
+                        val client = clientDao.read(contract.clientId)
+                        client?.let { ContractClientModel(contract, client) }
+                            ?: throw Exception("Client not found")
+                    }
                 }
+                emit(contractsWithClient)
+                delay(5000)
             }
-            emit(contractsWithClient)
         }
     }
 

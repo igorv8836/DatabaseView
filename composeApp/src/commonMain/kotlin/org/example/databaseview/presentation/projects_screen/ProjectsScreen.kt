@@ -3,19 +3,18 @@ package org.example.databaseview.presentation.projects_screen
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.example.databaseview.domain.model.*
 import org.example.databaseview.presentation.navigation.ProjectDetailsRoute
+import org.example.databaseview.presentation.shared_elements.LoadingScreen
 import org.example.databaseview.presentation.viewmodel.*
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -32,37 +31,33 @@ fun ProjectsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectsScreen(
     state: ProjectsScreenState,
     navigateToNewProject: () -> Unit,
     onProjectSelected: (id: Int) -> Unit
 ) {
-    Scaffold(floatingActionButton = {
-        FloatingActionButton(
-            onClick = navigateToNewProject, modifier = Modifier.padding(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add, contentDescription = "Добавить проект"
-            )
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Проекты") }) },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = navigateToNewProject, modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add, contentDescription = "Добавить проект"
+                )
+            }
+        }) { paddings ->
+        Box(modifier = Modifier.fillMaxSize().padding(paddings)) {
+            when (state) {
+                is ProjectsScreenState.Loading -> LoadingScreen()
+                is ProjectsScreenState.Error -> ErrorScreen(message = state.message)
+                is ProjectsScreenState.Success -> ProjectsListScreen(
+                    state = state, onProjectSelected = onProjectSelected
+                )
+            }
         }
-    }) {
-        when (state) {
-            is ProjectsScreenState.Loading -> LoadingScreen()
-            is ProjectsScreenState.Error -> ErrorScreen(message = state.message)
-            is ProjectsScreenState.Success -> ProjectsListScreen(
-                projects = state.projects, onProjectSelected = onProjectSelected
-            )
-        }
-    }
-}
-
-@Composable
-fun LoadingScreen() {
-    Box(
-        contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()
-    ) {
-        CircularProgressIndicator()
     }
 }
 
@@ -81,13 +76,14 @@ fun ErrorScreen(message: String) {
 
 @Composable
 fun ProjectsListScreen(
-    projects: List<ProjectFullModel>, onProjectSelected: (id: Int) -> Unit
+    state: ProjectsScreenState.Success,
+    onProjectSelected: (id: Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(projects) { project ->
+        items(state.projects) { project ->
             ProjectItem(project = project, onProjectSelected = onProjectSelected)
         }
     }
@@ -146,26 +142,9 @@ fun ProjectItem(
 fun ProjectsScreenPreview() {
     val sampleProjects = listOf(
         ProjectFullModel(
-            project = Project(
-                id = 1, name = "Проект А", requirements = "Требования А", contractId = 1
-            ), tasks = listOf(
-                ProjectTaskModel(
-                    Task(
-                        1, 1, "Задача 1", "Описание 1", java.time.LocalDate.now().plusDays(10), 1, 1
-                    ), Status(1, "В работе"), Worker(
-                        1, 1, "Иванов Иван Иванович", "+7 999 999 99 99", 1
-                    )
-                )
-            ), contract = ContractClientModel(
-                Contract(
-                    id = 1,
-                    clientId = 1,
-                    amount = 1000.0,
-                    deadline = java.time.LocalDate.now().plusDays(30)
-                ), Client(
-                    id = 1, fullName = "Иванов Иван Иванович", phone = "+7 999 999 99 99"
-                )
-            )
+            project = Project(),
+            tasks = listOf(ProjectTaskModel(Task(), Status(), Worker())),
+            contract = ContractClientModel(Contract(), Client())
         )
     )
     ProjectsScreen(state = ProjectsScreenState.Success(sampleProjects), navigateToNewProject = {}) {

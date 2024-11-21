@@ -1,12 +1,13 @@
 package org.example.databaseview.presentation.navigation
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.compose.*
-import org.example.databaseview.presentation.projects_screen.*
+import org.example.databaseview.presentation.projects_screen.ProjectsScreen
+import org.example.databaseview.presentation.projects_screen.projects_details_screen.ProjectDetailsScreen
 
 @Composable
 fun AppNavGraph(

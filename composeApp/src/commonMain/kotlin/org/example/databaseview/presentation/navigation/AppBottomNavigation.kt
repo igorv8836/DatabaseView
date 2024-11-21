@@ -9,7 +9,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.*
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun AppBottomNavigation(
@@ -65,7 +65,7 @@ fun AppBottomNavigation(
                     ), selected = isSelected, onClick = {
                         navController.navigate(topLevelRoute.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                                saveState = false
                             }
                             launchSingleTop = true
                             restoreState = true

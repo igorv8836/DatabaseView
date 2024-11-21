@@ -1,5 +1,6 @@
 package org.example.databaseview.data.repository
 
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.example.databaseview.data.dao.*
 import org.example.databaseview.data.database.dbQuery
@@ -26,15 +27,25 @@ class ProjectRepositoryImpl(
     }
 
     override fun getProjects(): Flow<List<ProjectFullModel>> = flow {
-        val projects = dbQuery {
-            projectDao.readAll().map { project ->
-                val tasks = getTasksForProject(project.id)
-                val contract = getContractWithClient(project.contractId)
-                ProjectFullModel(project, tasks, contract)
+        var previousProjects: List<ProjectFullModel>? = null
+
+        while (true) {
+            val currentProjects = dbQuery {
+                projectDao.readAll().map { project ->
+                    val tasks = getTasksForProject(project.id)
+                    val contract = getContractWithClient(project.contractId)
+                    ProjectFullModel(project, tasks, contract)
+                }
             }
+
+            if (previousProjects == null || previousProjects != currentProjects) {
+                emit(currentProjects)
+                previousProjects = currentProjects
+            }
+
+            delay(5000)
         }
-        emit(projects)
-    }
+    }.flowOn(Dispatchers.IO)
 
     private fun getTasksForProject(projectId: Int): List<ProjectTaskModel> {
         return taskDao.readByProjectId(projectId).map { task ->
