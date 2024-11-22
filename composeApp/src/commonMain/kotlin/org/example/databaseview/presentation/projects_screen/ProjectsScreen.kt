@@ -8,13 +8,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.example.databaseview.domain.model.*
 import org.example.databaseview.presentation.navigation.ProjectDetailsRoute
-import org.example.databaseview.presentation.shared_elements.LoadingScreen
+import org.example.databaseview.presentation.shared_elements.*
 import org.example.databaseview.presentation.viewmodel.*
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -58,19 +58,6 @@ fun ProjectsScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun ErrorScreen(message: String) {
-    Box(
-        contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().padding(16.dp)
-    ) {
-        Text(
-            text = "Ошибка: $message",
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.titleMedium
-        )
     }
 }
 

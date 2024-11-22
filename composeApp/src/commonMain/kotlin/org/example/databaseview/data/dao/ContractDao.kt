@@ -24,6 +24,10 @@ class ContractDao : CrudDao<Contract> {
     override fun readAll(): List<Contract> =
         ContractTable.selectAll().map(ResultRow::toContractModel)
 
+    fun readByClientId(clientId: Int) =
+        ContractTable.select { ContractTable.clientId eq clientId }
+            .map(ResultRow::toContractModel)
+
     override fun update(entity: Contract): Boolean =
         ContractTable.update({ ContractTable.id eq entity.id }) {
             it[clientId] = entity.clientId

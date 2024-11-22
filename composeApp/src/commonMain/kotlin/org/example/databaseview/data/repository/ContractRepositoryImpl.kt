@@ -14,7 +14,6 @@ class ContractRepositoryImpl(
     override fun getContracts(): Flow<List<ContractClientModel>> {
         return flow {
             while (true) {
-
                 val contractsWithClient = dbQuery {
                     contractDao.readAll().map { contract ->
                         val client = clientDao.read(contract.clientId)

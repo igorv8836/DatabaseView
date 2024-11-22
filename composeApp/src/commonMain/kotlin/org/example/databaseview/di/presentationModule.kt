@@ -7,4 +7,6 @@ import org.koin.dsl.module
 fun presentationModule() = module {
     viewModel { ProjectsViewModel(get()) }
     viewModel { ProjectDetailsViewModel(get(), get()) }
+    viewModel { ClientDetailsViewModel(get()) }
+    viewModel { ClientsViewModel(get()) }
 }

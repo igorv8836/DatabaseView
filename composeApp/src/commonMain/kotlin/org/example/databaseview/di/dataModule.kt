@@ -11,5 +11,5 @@ fun dataModule() = module {
 
     single<ProjectRepository> { ProjectRepositoryImpl(get(), get(), get(), get(), get(), get()) }
     single<ContractRepository> { ContractRepositoryImpl(get(), get()) }
-    single<ClientRepository> { ClientRepositoryImpl(get()) }
+    single<ClientRepository> { ClientRepositoryImpl(get(), get()) }
 }

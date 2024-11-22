@@ -12,6 +12,9 @@ data object WorkersRoute
 data object ClientsRoute
 
 @Serializable
+data class ClientDetailsRoute(val id: Int?)
+
+@Serializable
 data class ProjectDetailsRoute(val id: Int?)
 
 @Serializable
